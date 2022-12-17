@@ -6,6 +6,8 @@ import { SearchOutlined,AudioOutlined ,LoadingOutlined, PlusOutlined,InboxOutlin
 import {  Button, Tooltip, Space  ,Input,message, Upload} from "antd"
 import p1 from '../image/Home1_img.jpg'
 import Pngtree from '../image/Pngtree.png'
+// import Texty from 'rc-texty';
+// import 'rc-texty/assets/index.css';
 const { Search } = Input;
 
 const onSearch = (value) => console.log(value);
@@ -34,6 +36,7 @@ function Home1(){
 
     return(
         <div className="background">
+            <br/>
             <br/>
             <br/>
             <br/>
@@ -81,6 +84,9 @@ function Home1(){
             </Container>
             <br/>
             <br/>
+            <Container>
+                <p className="p">Must No Be Bad~</p>
+            </Container>
             <br/>
 
         </div>

@@ -21,11 +21,11 @@ function App() {
                 <Navbar scrolling dark expand="md" fixed="top">
 
                     <Container>
-                        <NavbarBrand to="/"><h1  className='title1'>椅定很好吃</h1></NavbarBrand>
-                        <Link className='text1' to="/Home1" ><button className='button1'>主頁</button></Link>
-                        <Link className='text1' to="/Home2" ><button className='button1'>食譜</button></Link>
-                        <Link className='text1' to="/Home3" ><button className='button1'>關於</button></Link>
-                        <Link className='text1' to="/Home4" ><button className='button1'>使用說明</button></Link>
+                        <NavbarBrand to="/"><h1  className='title1'>AI Kitchen</h1></NavbarBrand>
+                        <Link className='text1' to="/Home1" ><button className='btn-87'>Home</button></Link>
+                        <Link className='text1' to="/Home2" ><button className='btn-87'>Recipe</button></Link>
+                        <Link className='text1' to="/Home3" ><button className='btn-87'>About</button></Link>
+                        <Link className='text1' to="/Home4" ><button className='btn-87'>Instruction</button></Link>
                     </Container>
 
 
