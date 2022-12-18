@@ -2,6 +2,7 @@ import {Container, Navbar,Button} from "react-bootstrap";
 import React,{useState,Component } from 'react';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu, Switch } from 'antd';
+import MealList from './MealLIst'
 function getItem(label, key, icon, children, type) {
     return {
         key,
@@ -34,12 +35,8 @@ function Home2(){
     const [theme, setTheme] = useState('dark');
     const [current, setCurrent] = useState('1');
     const [data,setData]=useState()
-    async function fetchotherApi(){
-        let APIdata=await fetch("https://api.spoonacular.com/recipes/complexSearch",{method:"Get"})
-            console.log(APIdata);
-        let APIJson=await APIdata.json();
-        console.log(APIJson)
-    }
+    const [mealData,setMealData]=useState(null)
+    const [calories,setCalories]=useState(2000)
     const changeTheme = (value) => {
         setTheme(value ? 'dark' : 'light');
     };
@@ -47,7 +44,22 @@ function Home2(){
         console.log('click ', e);
         setCurrent(e.key);
     };
-
+    // function handlechange(e){
+    //     setCalories(e.target.value)
+    // }
+    // function getMealData(){
+    //     fetch(
+    //         `https://api.spoonacular.com/mealplanner/generate?apiKey=58655337b64f49d79640921a919bc10c&timeFrame=day&targetCalories=${calories}`
+    //     )
+    //         .then((response)=>response.json())
+    //         .then((data)=>{
+    //         setMealData(data);
+    //         console.log(data)
+    //     })
+    //         .catch(()=>{
+    //         console.log("error");
+    //     })
+    // }
 
     return(
         <div className="background4">
@@ -77,11 +89,19 @@ function Home2(){
                     mode="inline"
                     items={items}
                 />
-                <Button varient="success" onClick={()=>fetchotherApi()}>Click me</Button>
+
             </Container>
             <br/>
             <br/>
             <br/>
+            {/*<section className="controls">*/}
+            {/*    <input*/}
+            {/*        type="number"*/}
+            {/*        placeholder="Calories (e.g. 2000)"*/}
+            {/*        onChange={handlechange}/>*/}
+            {/*</section>*/}
+            {/*<button onClick={()=>getMealData()}>Get Daily meal</button>*/}
+            {/*{mealData && <MealList mealData={mealData}/>}*/}
         </div>
     )
 }

@@ -8,6 +8,7 @@ import p1 from '../image/Home1_img.jpg'
 import Pngtree from '../image/Pngtree.png'
 // import Texty from 'rc-texty';
 // import 'rc-texty/assets/index.css';
+import MealList from './MealLIst'
 const { Search } = Input;
 
 const onSearch = (value) => console.log(value);
@@ -33,7 +34,24 @@ const props = {
     },
 };
 function Home1(){
-
+    const [mealData,setMealData]=useState(null)
+    const [calories,setCalories]=useState(2000)
+    function handlechange(e){
+        setCalories(e.target.value)
+    }
+    function getMealData(){
+        fetch(
+            `https://api.spoonacular.com/mealplanner/generate?apiKey=58655337b64f49d79640921a919bc10c&timeFrame=day&targetCalories=${calories}`
+        )
+            .then((response)=>response.json())
+            .then((data)=>{
+                setMealData(data);
+                console.log(data)
+            })
+            .catch(()=>{
+                console.log("error");
+            })
+    }
     return(
         <div className="background">
             <br/>
@@ -77,9 +95,17 @@ function Home1(){
                 </Row>
                 <br/>
                 {/*搜尋食譜*/}
-                <div>
-                    <Search placeholder="input search text" onSearch={onSearch} enterButton />
-                </div>
+                {/*<div>*/}
+                {/*    <Search placeholder="input search text" onSearch={onSearch} enterButton onChange={handlechange} onClick={()=>getMealData()}/>*/}
+                {/*</div>*/}
+                <section className="controls">
+                    <input
+                        type="number"
+                        placeholder="Calories (e.g. 2000)"
+                        onChange={handlechange}/>
+                </section>
+                <button onClick={()=>getMealData()}>Get Daily meal</button>
+                {mealData && <MealList mealData={mealData}/>}
                 <br/>
             </Container>
             <br/>
