@@ -98,13 +98,23 @@ function Home1(){
                 {/*<div>*/}
                 {/*    <Search placeholder="input search text" onSearch={onSearch} enterButton onChange={handlechange} onClick={()=>getMealData()}/>*/}
                 {/*</div>*/}
-                <section className="controls">
-                    <input
-                        type="number"
-                        placeholder="Calories (e.g. 2000)"
-                        onChange={handlechange}/>
-                </section>
-                <button onClick={()=>getMealData()}>Get Daily meal</button>
+                <div>
+                    <Row>
+                        <section className="controls">
+                            <input
+                                type="number"
+                                placeholder="Calories (e.g. 2000)"
+                                onChange={handlechange}/>
+
+                        </section>
+                    </Row>
+                    <Row>
+                        <Button onClick={()=>getMealData()} className="btn-59">Get Daily meal</Button>
+                    </Row>
+
+
+                </div>
+
                 {mealData && <MealList mealData={mealData}/>}
                 <br/>
             </Container>
