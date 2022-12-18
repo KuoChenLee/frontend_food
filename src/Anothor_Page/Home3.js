@@ -2,7 +2,7 @@ import {Container, Navbar,Col,Row} from "react-bootstrap";
 import React from 'react';
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
-function Home1(){
+function Home3(){
     return(
         <div className="background5">
             <br/>
@@ -49,4 +49,4 @@ function Home1(){
     )
 }
 
-export default Home1;
+export default Home3;

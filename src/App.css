@@ -57,7 +57,7 @@
 }
 .background5{
   background-color: antiquewhite;
-  background-image: url("./image/background2.jpg");
+  background-image: url("./image/background6.jpg");
 }
 .background2{
   opacity:80%;
@@ -105,7 +105,7 @@
   border-width: 2em;
 }
 .background7{
-  background-image: url("./image/background5.jpg");
+  background-image: url("./image/background7.jpg");
 }
 .inputWithin {
   position: relative;
