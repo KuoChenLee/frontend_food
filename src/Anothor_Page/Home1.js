@@ -1,5 +1,5 @@
 import {Container, Navbar, Col, Row} from "react-bootstrap";
-import React,{useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
 import { SearchOutlined,AudioOutlined ,LoadingOutlined, PlusOutlined,InboxOutlined } from '@ant-design/icons';
@@ -34,23 +34,79 @@ const props = {
     },
 };
 function Home1(){
+    const [ingredients,setIngredients]=useState(null)
     const [mealData,setMealData]=useState(null)
     const [calories,setCalories]=useState(2000)
+    const[number,setNumber]=useState()
+    const [recipe,setRecipe]=useState([])
+    const [id,setId]=useState(null)
+    const [cook_method,setCook_method]=useState([])
+    // const [recipedata,setRecipedata]=useState()
+    useEffect(()=>{getrecipe()},[])
+    useEffect(()=>{recipemessage()},[])
     function handlechange(e){
         setCalories(e.target.value)
     }
-    function getMealData(){
-        fetch(
-            `https://api.spoonacular.com/mealplanner/generate?apiKey=58655337b64f49d79640921a919bc10c&timeFrame=day&targetCalories=${calories}`
-        )
-            .then((response)=>response.json())
-            .then((data)=>{
-                setMealData(data);
-                console.log(data)
-            })
-            .catch(()=>{
-                console.log("error");
-            })
+    function handlechange2(e){
+        setNumber(e.target.value);
+    }
+    function handlechange3(e){
+        setId(e.target.value);
+    }
+    // function getMealData(){
+    //     fetch(
+    //         `https://api.spoonacular.com/mealplanner/generate?apiKey=58655337b64f49d79640921a919bc10c&timeFrame=day&targetCalories=${calories}`
+    //     )
+    //         .then((response)=>response.json())
+    //         .then((data)=>{
+    //             setMealData(data);
+    //             console.log(data)
+    //         })
+    //         .catch(()=>{
+    //             console.log("error");
+    //         })
+    // }
+    async function recipemessage(){
+        let Message=await fetch(`https://api.spoonacular.com/recipes/${id}/information?apiKey=6c8f849744034cae8fdeb950a8cd63d9&includeNutrition=false`)
+        console.log(Message)
+        let jsonMessage=await Message.json();
+        console.log(jsonMessage)
+        let extendedIngredients=await jsonMessage.extendedIngredients
+        console.log(extendedIngredients)
+        const cook_methods=await Promise.all(extendedIngredients.map(async(j)=>{
+            const Cook_method={
+                aisle:j.aisle.toString(),
+                amount:j.amount.toString(),
+                consistency:j.consistency.toString(),
+                id:j.id,
+                image:j.image,
+                name:j.name,
+                nameClean:j.nameClean.toString(),
+                original:j.original.toString(),
+                originalName:j.originalName.toString(),
+                unit:j.unit
+            }
+            return cook_method
+        }))
+        setCook_method(cook_methods.filter(Cook_method => Cook_method !== null))
+    }
+
+    async function getrecipe(){
+
+        let Recipe=await fetch(`https://api.spoonacular.com/recipes/findByIngredients?apiKey=6c8f849744034cae8fdeb950a8cd63d9&ingredients=${ingredients},+flour,+sugar&number=${number}`)
+        let jsonrecipe=await Recipe.json();
+        console.log(jsonrecipe)
+        const Recipess=await Promise.all(jsonrecipe.map(async(i)=>{
+            const Recipes={
+                id:i.id,
+                image:i.image,
+                title:i.title
+            }
+            console.log(Recipes)
+            return Recipes
+        }))
+        setRecipe(Recipess.filter(Recipes => Recipes !== null))
+
     }
     return(
         <div className="background">
@@ -99,24 +155,60 @@ function Home1(){
                 {/*    <Search placeholder="input search text" onSearch={onSearch} enterButton onChange={handlechange} onClick={()=>getMealData()}/>*/}
                 {/*</div>*/}
                 <div>
-                    <Row>
-                        <section className="controls">
-                            <input
-                                type="number"
-                                placeholder="Calories (e.g. 2000)"
-                                onChange={handlechange}/>
 
-                        </section>
-                    </Row>
-                    <Row>
-                        <Button onClick={()=>getMealData()} className="btn-59">Get Daily meal</Button>
-                    </Row>
+                <Row>
+                    <section className="controls">
+                        <input
+                            type="string"
+                            placeholder="search recipe"
+                            onChange={handlechange}/>
 
+                    </section>
+                </Row>
+               <Row>
+                   <section className="controls">
+                       <input
+                           type="string"
+                           placeholder="number"
+                           onChange={handlechange2}/>
 
+                   </section>
+               </Row>
+                    <br/>
+                <Row><Button onClick={()=>getrecipe()} className="btn-59">Get Daily meal</Button></Row>
+                    <br/>
                 </div>
+                {
+                    recipe.map((Recipes,i)=>(
+                        <Container key={i}>
+                            <img src={Recipes.image} className="Recipes_photo"/>
+                            <Row>
+                                <h1>{Recipes.title}</h1>
+                            </Row>
+                            <Row>
+                                <h5>{Recipes.id}</h5>
+                            </Row>
+                            {/*{Recipes.missedIngredients}*/}
+                        </Container>
+                    ))
+                }
+                <input
+                    type="string"
+                    placeholder="search recipe"
+                    onChange={handlechange3}/>
 
-                {mealData && <MealList mealData={mealData}/>}
-                <br/>
+                <button onClick={()=>recipemessage()}>Click me</button>
+                {
+                    cook_method.map((Cook_method,j)=>(
+
+                            <ul key={j}>
+                                <li>{Cook_method.name}</li>
+                            </ul>
+
+                    ))
+
+                }
+
             </Container>
             <br/>
             <br/>
