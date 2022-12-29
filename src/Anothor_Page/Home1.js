@@ -1,4 +1,4 @@
-import {Container, Navbar, Col, Row} from "react-bootstrap";
+import {Container, Navbar, Col, Row,Modal} from "react-bootstrap";
 import React, {useEffect, useState} from 'react';
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
@@ -33,19 +33,20 @@ const props = {
         console.log('Dropped files', e.dataTransfer.files);
     },
 };
-function Home1(){
-    const [ingredients,setIngredients]=useState(null)
-    const [mealData,setMealData]=useState(null)
-    const [calories,setCalories]=useState(2000)
-    const[number,setNumber]=useState()
+function Home1(props){
+    const [ingredients,setIngredients]=useState()
+    // const [mealData,setMealData]=useState(null)
+    // const [calories,setCalories]=useState(2000)
+    const[number,setNumber]=useState(10)
     const [recipe,setRecipe]=useState([])
     const [id,setId]=useState(null)
     const [cook_method,setCook_method]=useState([])
+    const API_KEY=props.API_KEY
     // const [recipedata,setRecipedata]=useState()
     useEffect(()=>{getrecipe()},[])
     useEffect(()=>{recipemessage()},[])
     function handlechange(e){
-        setCalories(e.target.value)
+        setIngredients(e.target.value)
     }
     function handlechange2(e){
         setNumber(e.target.value);
@@ -66,8 +67,8 @@ function Home1(){
     //             console.log("error");
     //         })
     // }
-    async function recipemessage(){
-        let Message=await fetch(`https://api.spoonacular.com/recipes/${id}/information?apiKey=6c8f849744034cae8fdeb950a8cd63d9&includeNutrition=false`)
+    async function recipemessage(recipeid){
+        let Message=await fetch(`https://api.spoonacular.com/recipes/${recipeid}/information?apiKey=${API_KEY}&includeNutrition=false`)
         console.log(Message)
         let jsonMessage=await Message.json();
         console.log(jsonMessage)
@@ -86,14 +87,31 @@ function Home1(){
                 originalName:j.originalName.toString(),
                 unit:j.unit
             }
-            return cook_method
+            return Cook_method
         }))
         setCook_method(cook_methods.filter(Cook_method => Cook_method !== null))
     }
+    function RecipeMessage(){
 
+        return(
+            <div>
+                {
+                                        cook_method.map((Cook_method,j)=>(
+
+                                            <ul key={j}>
+                                                <li>{Cook_method.name}</li>
+                                            </ul>
+
+                                        ))
+
+                                    }
+            </div>
+
+        )
+    }
     async function getrecipe(){
 
-        let Recipe=await fetch(`https://api.spoonacular.com/recipes/findByIngredients?apiKey=6c8f849744034cae8fdeb950a8cd63d9&ingredients=${ingredients},+flour,+sugar&number=${number}`)
+        let Recipe=await fetch(`https://api.spoonacular.com/recipes/findByIngredients?apiKey=${API_KEY}&ingredients=${ingredients}&number=${number}&ignorePantry=true`)
         let jsonrecipe=await Recipe.json();
         console.log(jsonrecipe)
         const Recipess=await Promise.all(jsonrecipe.map(async(i)=>{
@@ -150,10 +168,7 @@ function Home1(){
 
                 </Row>
                 <br/>
-                {/*搜尋食譜*/}
-                {/*<div>*/}
-                {/*    <Search placeholder="input search text" onSearch={onSearch} enterButton onChange={handlechange} onClick={()=>getMealData()}/>*/}
-                {/*</div>*/}
+
                 <div>
 
                 <Row>
@@ -181,32 +196,21 @@ function Home1(){
                 {
                     recipe.map((Recipes,i)=>(
                         <Container key={i}>
-                            <img src={Recipes.image} className="Recipes_photo"/>
+                            <img onClick={()=>recipemessage(Recipes.id)} src={Recipes.image} className="Recipes_photo" />
                             <Row>
                                 <h1>{Recipes.title}</h1>
                             </Row>
                             <Row>
                                 <h5>{Recipes.id}</h5>
+
                             </Row>
-                            {/*{Recipes.missedIngredients}*/}
+                            <Row>
+                                <Button type="primary" onClick={()=>recipemessage(Recipes.id)}>Show Recipe Message</Button>
+                            </Row>
+
+                                {RecipeMessage()}
                         </Container>
                     ))
-                }
-                <input
-                    type="string"
-                    placeholder="search recipe"
-                    onChange={handlechange3}/>
-
-                <button onClick={()=>recipemessage()}>Click me</button>
-                {
-                    cook_method.map((Cook_method,j)=>(
-
-                            <ul key={j}>
-                                <li>{Cook_method.name}</li>
-                            </ul>
-
-                    ))
-
                 }
 
             </Container>

@@ -14,6 +14,7 @@ import Home2 from './Anothor_Page/Home2';
 import Home3 from "./Anothor_Page/Home3";
 import Home4 from "./Anothor_Page/Home4";
 function App() {
+    const API_KEY='58655337b64f49d79640921a919bc10c';
   return (
     <div className="App">
         <div className="background1">
@@ -35,7 +36,7 @@ function App() {
 
                 <Routes>
                     {/* 路徑處理 */}
-                    <Route exact path="*"  element={<Home1/>}/>
+                    <Route exact path="*"  element={<Home1 API_KEY={API_KEY}/>}/>
                     <Route path="/Home2" element={<Home2/>} />
                     <Route path="/Home3" element={<Home3/>} />
                     <Route path="/Home4" element={<Home4/>} />
