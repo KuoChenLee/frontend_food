@@ -14,7 +14,7 @@ import Home2 from './Anothor_Page/Home2';
 import Home3 from "./Anothor_Page/Home3";
 import Home4 from "./Anothor_Page/Home4";
 function App() {
-    const API_KEY='58655337b64f49d79640921a919bc10c';
+    const API_KEY='6c8f849744034cae8fdeb950a8cd63d9';
   return (
     <div className="App">
         <div className="background1">

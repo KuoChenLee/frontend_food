@@ -3,70 +3,58 @@ import React, {useEffect, useState} from 'react';
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
 import { SearchOutlined,AudioOutlined ,LoadingOutlined, PlusOutlined,InboxOutlined } from '@ant-design/icons';
-import {  Button, Tooltip, Space  ,Input,message, Upload} from "antd"
+import {  Button, Tooltip, Space  ,Input,message, Upload,Card } from "antd"
 import p1 from '../image/Home1_img.jpg'
 import Pngtree from '../image/Pngtree.png'
 // import Texty from 'rc-texty';
 // import 'rc-texty/assets/index.css';
 import MealList from './MealLIst'
-const { Search } = Input;
-
-const onSearch = (value) => console.log(value);
+// const { Search } = Input;
+//
+// const onSearch = (value) => console.log(value);
 
 const { Dragger } = Upload;
-const props = {
-    name: 'file',
-    multiple: true,
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-    onChange(info) {
-        const { status } = info.file;
-        if (status !== 'uploading') {
-            console.log(info.file, info.fileList);
-        }
-        if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`);
-        } else if (status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-        }
-    },
-    onDrop(e) {
-        console.log('Dropped files', e.dataTransfer.files);
-    },
-};
+// const props = {
+//     name: 'file',
+//     multiple: true,
+//     action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+//     onChange(info) {
+//         const { status } = info.file;
+//         if (status !== 'uploading') {
+//             console.log(info.file, info.fileList);
+//         }
+//         if (status === 'done') {
+//             message.success(`${info.file.name} file uploaded successfully.`);
+//         } else if (status === 'error') {
+//             message.error(`${info.file.name} file upload failed.`);
+//         }
+//     },
+//     onDrop(e) {
+//         console.log('Dropped files', e.dataTransfer.files);
+//     },
+// };
 function Home1(props){
     const [ingredients,setIngredients]=useState()
-    // const [mealData,setMealData]=useState(null)
-    // const [calories,setCalories]=useState(2000)
-    const[number,setNumber]=useState(10)
+    const[number,setNumber]=useState(2)
     const [recipe,setRecipe]=useState([])
     const [id,setId]=useState(null)
     const [cook_method,setCook_method]=useState([])
-    const API_KEY=props.API_KEY
-    // const [recipedata,setRecipedata]=useState()
-    useEffect(()=>{getrecipe()},[])
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
     useEffect(()=>{recipemessage()},[])
+    useEffect(()=>{getrecipe()},[])
+
+    const API_KEY=props.API_KEY
+    const { Meta } = Card;
+
     function handlechange(e){
         setIngredients(e.target.value)
     }
     function handlechange2(e){
         setNumber(e.target.value);
     }
-    function handlechange3(e){
-        setId(e.target.value);
-    }
-    // function getMealData(){
-    //     fetch(
-    //         `https://api.spoonacular.com/mealplanner/generate?apiKey=58655337b64f49d79640921a919bc10c&timeFrame=day&targetCalories=${calories}`
-    //     )
-    //         .then((response)=>response.json())
-    //         .then((data)=>{
-    //             setMealData(data);
-    //             console.log(data)
-    //         })
-    //         .catch(()=>{
-    //             console.log("error");
-    //         })
-    // }
     async function recipemessage(recipeid){
         let Message=await fetch(`https://api.spoonacular.com/recipes/${recipeid}/information?apiKey=${API_KEY}&includeNutrition=false`)
         console.log(Message)
@@ -92,21 +80,48 @@ function Home1(props){
         setCook_method(cook_methods.filter(Cook_method => Cook_method !== null))
     }
     function RecipeMessage(){
-
         return(
             <div>
                 {
-                                        cook_method.map((Cook_method,j)=>(
+                    cook_method.map((Cook_method,j)=>(
 
-                                            <ul key={j}>
-                                                <li>{Cook_method.name}</li>
-                                            </ul>
+                        <ul key={j}>
+                            <li>{Cook_method.name}</li>
+                            <li><img src={Cook_method.image}/></li>
+                            {/*<li>{Cook_method.image}</li>*/}
+                            <li>{Cook_method.original}</li>
+                        </ul>
 
-                                        ))
+                    ))
 
-                                    }
+                }
             </div>
 
+
+        )
+    }
+    function display_recipemessage(recipeid){
+        return(
+            <div>
+                <button className={"btn-76"} onClick={handleShow}>
+                    <span onClick={()=>recipemessage(recipeid)}>Show Recipe Message</span>
+
+                </button>
+
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Recipe Message</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {RecipeMessage()}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
         )
     }
     async function getrecipe(){
@@ -192,27 +207,28 @@ function Home1(props){
                     <br/>
                 <Row><Button onClick={()=>getrecipe()} className="btn-59">Get Daily meal</Button></Row>
                     <br/>
+
                 </div>
+                <Row className={"justify-content-md-center"}>
                 {
                     recipe.map((Recipes,i)=>(
-                        <Container key={i}>
-                            <img onClick={()=>recipemessage(Recipes.id)} src={Recipes.image} className="Recipes_photo" />
-                            <Row>
-                                <h1>{Recipes.title}</h1>
-                            </Row>
-                            <Row>
-                                <h5>{Recipes.id}</h5>
+                    <Card
+                        key={i}
+                    hoverable
+                    style={{
+                    width: 240,
 
-                            </Row>
-                            <Row>
-                                <Button type="primary" onClick={()=>recipemessage(Recipes.id)}>Show Recipe Message</Button>
-                            </Row>
-
-                                {RecipeMessage()}
-                        </Container>
+                }}
+                    cover={<img alt="example" src={Recipes.image} />}
+                    >
+                    <Meta title={Recipes.title} />
+                        <br/>
+                        {display_recipemessage(Recipes.id)}
+                    </Card>
                     ))
                 }
 
+            </Row>
             </Container>
             <br/>
             <br/>
