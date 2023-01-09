@@ -2,8 +2,8 @@ import {Container, Navbar, Col, Row,Modal} from "react-bootstrap";
 import React, {useEffect, useState} from 'react';
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
-import { SearchOutlined,AudioOutlined ,LoadingOutlined, PlusOutlined,InboxOutlined } from '@ant-design/icons';
-import {  Button, Tooltip, Space  ,Input,message, Upload,Card } from "antd"
+import { SearchOutlined,AudioOutlined ,LoadingOutlined, PlusOutlined,InboxOutlined ,ArrowRightOutlined} from '@ant-design/icons';
+import {  Button, Tooltip, Space  ,Input,message, Upload,Card} from "antd"
 import p1 from '../image/Home1_img.jpg'
 import Pngtree from '../image/Pngtree.png'
 // import Texty from 'rc-texty';
@@ -40,7 +40,7 @@ function Home1(props){
     const [id,setId]=useState(null)
     const [cook_method,setCook_method]=useState([])
     const [show, setShow] = useState(false);
-
+    const [url,setUrl]=useState()
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     useEffect(()=>{recipemessage()},[])
@@ -79,33 +79,44 @@ function Home1(props){
         }))
         setCook_method(cook_methods.filter(Cook_method => Cook_method !== null))
     }
+
     function RecipeMessage(){
         return(
             <div>
                 {
                     cook_method.map((Cook_method,j)=>(
 
-                        <ul key={j}>
-                            <li>{Cook_method.name}</li>
-                            <li><img src={Cook_method.image}/></li>
-                            {/*<li>{Cook_method.image}</li>*/}
-                            <li>{Cook_method.original}</li>
-                        </ul>
+                        <Row key={j}>
+                            <Col>{Cook_method.name}</Col>
+                            <Col>{Cook_method.original}</Col>
+                            <Col><img src={`https://spoonacular.com/cdn/ingredients_100x100/${Cook_method.image}`} /></Col>
+
+                            {/*<Button onClick={()=>getmsg(Cook_method.sourceUrl)}>Click</Button>*/}
+                        </Row>
 
                     ))
 
                 }
+
             </div>
 
 
         )
     }
+   async function fetchUrl(recipeid){
+       let Message=await fetch(`https://api.spoonacular.com/recipes/${recipeid}/information?apiKey=${API_KEY}&includeNutrition=false`)
+       console.log(Message)
+       let jsonMessage=await Message.json();
+       console.log(jsonMessage)
+       const Url=jsonMessage.sourceUrl
+       setUrl(Url)
+       console.log(Url)
+   }
     function display_recipemessage(recipeid){
         return(
             <div>
-                <button className={"btn-76"} onClick={handleShow}>
-                    <span onClick={()=>recipemessage(recipeid)}>Show Recipe Message</span>
-
+                <button  className={"btn-76"}  onClick={handleShow}>
+                    <span onClick={()=>{recipemessage(recipeid);fetchUrl(recipeid);}}>Show Recipe Message</span>
                 </button>
 
                 <Modal show={show} onHide={handleClose}>
@@ -114,8 +125,12 @@ function Home1(props){
                     </Modal.Header>
                     <Modal.Body>
                         {RecipeMessage()}
+                        <a href={url} >前往製作方法<ArrowRightOutlined /></a>
                     </Modal.Body>
                     <Modal.Footer>
+
+
+                        {/*<a href={`${sourceUrl}`}>Product Method<ArrowRightOutlined /></a>*/}
                         <Button variant="secondary" onClick={handleClose}>
                             Close
                         </Button>
@@ -124,6 +139,11 @@ function Home1(props){
             </div>
         )
     }
+    // https://spoonacular.com/productImages/{ID}-{SIZE}.{TYPE}
+
+
+
+
     async function getrecipe(){
 
         let Recipe=await fetch(`https://api.spoonacular.com/recipes/findByIngredients?apiKey=${API_KEY}&ingredients=${ingredients}&number=${number}&ignorePantry=true`)
@@ -223,6 +243,7 @@ function Home1(props){
                     >
                     <Meta title={Recipes.title} />
                         <br/>
+                        {/*<Button onClick={()=>fetchUrl(Recipes.id)}>{display_recipemessage(Recipes.id)}</Button>*/}
                         {display_recipemessage(Recipes.id)}
                     </Card>
                     ))
