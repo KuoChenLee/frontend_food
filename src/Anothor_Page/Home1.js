@@ -1,9 +1,10 @@
 import {Container, Navbar, Col, Row,Modal} from "react-bootstrap";
 import React, {useEffect, useState} from 'react';
+import useInterval from 'use-interval'
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
 import { SearchOutlined,AudioOutlined ,LoadingOutlined, PlusOutlined,InboxOutlined ,ArrowRightOutlined} from '@ant-design/icons';
-import {  Button, Tooltip, Space  ,Input,message, Upload,Card} from "antd"
+import {  Button, Tooltip, Space  ,Input,message, Upload,Card,Radio} from "antd"
 import p1 from '../image/Home1_img.jpg'
 import Pngtree from '../image/Pngtree.png'
 // import Texty from 'rc-texty';
@@ -35,26 +36,37 @@ const { Dragger } = Upload;
 // };
 function Home1(props){
     const [ingredients,setIngredients]=useState()
-    const[number,setNumber]=useState(2)
+    const[number,setNumber]=useState(5)
     const [recipe,setRecipe]=useState([])
-    const [id,setId]=useState(null)
+    // const [id,setId]=useState(null)
     const [cook_method,setCook_method]=useState([])
     const [show, setShow] = useState(false);
     const [url,setUrl]=useState()
+    const [random,setRandom]=useState(10000)
+    const [randomcard,setRandomCard]=useState()
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     useEffect(()=>{recipemessage()},[])
     useEffect(()=>{getrecipe()},[])
-
+    useInterval(() => {
+        // 这是你的自定义逻辑
+        setRandom(Math.floor(Math.random() * 10000));
+        console.log(random)
+        console.count()
+        random_recipe_card()
+    },10000);
     const API_KEY=props.API_KEY
     const { Meta } = Card;
 
+    // 輸入食材
     function handlechange(e){
         setIngredients(e.target.value)
     }
+    // 輸入數字
     function handlechange2(e){
         setNumber(e.target.value);
     }
+    // 輸入材料ID得到API的食譜數據
     async function recipemessage(recipeid){
         let Message=await fetch(`https://api.spoonacular.com/recipes/${recipeid}/information?apiKey=${API_KEY}&includeNutrition=false`)
         console.log(Message)
@@ -80,6 +92,7 @@ function Home1(props){
         setCook_method(cook_methods.filter(Cook_method => Cook_method !== null))
     }
 
+    // 將相關食物Map出來
     function RecipeMessage(){
         return(
             <div>
@@ -103,6 +116,7 @@ function Home1(props){
 
         )
     }
+   //  fetch 食譜id的製作方法網址
    async function fetchUrl(recipeid){
        let Message=await fetch(`https://api.spoonacular.com/recipes/${recipeid}/information?apiKey=${API_KEY}&includeNutrition=false`)
        console.log(Message)
@@ -112,6 +126,7 @@ function Home1(props){
        setUrl(Url)
        console.log(Url)
    }
+    // 將食譜數據顯示在modal上
     function display_recipemessage(recipeid){
         return(
             <div>
@@ -142,7 +157,7 @@ function Home1(props){
     // https://spoonacular.com/productImages/{ID}-{SIZE}.{TYPE}
 
 
-
+    // 得到關鍵字食譜
 
     async function getrecipe(){
 
@@ -161,6 +176,28 @@ function Home1(props){
         setRecipe(Recipess.filter(Recipes => Recipes !== null))
 
     }
+    // 隨機生成食譜卡
+    async function random_recipe_card(){
+
+        let Recipe_card_Url=await fetch(`https://api.spoonacular.com/recipes/${random}/card?apiKey=${API_KEY}`)
+
+        let Json=await Recipe_card_Url.json()
+        console.log(Json)
+        setRandomCard(Json.url)
+    }
+    // 顯示隨機食譜卡
+    function display_recipe_card(){
+        return(
+            <Card
+                hoverable
+                style={{ width: 300,height:400 }}
+                cover={<img src={randomcard} />}
+            >
+
+            </Card>
+        )
+    }
+
     return(
         <div className="background">
             <br/>
@@ -174,9 +211,9 @@ function Home1(props){
                 <Row>
                     <h1 className="text1">Welcome To My Kitchen</h1>
                 </Row>
-                <Row>
+                <Row className="justify-content-md-center">
                     {/*上傳圖片*/}
-                    <Col  >
+                    <Col  md="auto">
                         <Dragger {...props}>
                             <p className="ant-upload-drag-icon">
                                 <InboxOutlined />
@@ -188,16 +225,8 @@ function Home1(props){
                         </Dragger>
                     </Col>
                     {/*推薦食譜*/}
-                    <Col className="background3">
-                       <h1>推薦食譜</h1>
-                        <h3>義大利麵</h3>
-                        <h3>海鮮燉飯</h3>
-                        <h3>義大利麵</h3>
-                        <h3>海鮮燉飯</h3>
-                        <h3>義大利麵</h3>
-                        <h3>海鮮燉飯</h3>
-                        <h3>義大利麵</h3>
-                        <h3>海鮮燉飯</h3>
+                    <Col md="auto">
+                        {display_recipe_card()}
                     </Col>
 
 
@@ -216,14 +245,15 @@ function Home1(props){
                     </section>
                 </Row>
                <Row>
-                   <section className="controls">
-                       <input
-                           type="string"
-                           placeholder="number"
-                           onChange={handlechange2}/>
-
-                   </section>
+                   <Radio.Group defaultValue={5} style={{ marginTop: 16 }}>
+                       <Radio.Button value={5} onChange={handlechange2}>5</Radio.Button>
+                       <Radio.Button value={10} onChange={handlechange2}>10</Radio.Button>
+                       <Radio.Button value={15} onChange={handlechange2}>15</Radio.Button>
+                       <Radio.Button value={20} onChange={handlechange2}>20</Radio.Button>
+                   </Radio.Group>
                </Row>
+
+                    <button onClick={()=>random_recipe_card()}>Click me!</button>
                     <br/>
                 <Row><Button onClick={()=>getrecipe()} className="btn-59">Get Daily meal</Button></Row>
                     <br/>
@@ -243,7 +273,6 @@ function Home1(props){
                     >
                     <Meta title={Recipes.title} />
                         <br/>
-                        {/*<Button onClick={()=>fetchUrl(Recipes.id)}>{display_recipemessage(Recipes.id)}</Button>*/}
                         {display_recipemessage(Recipes.id)}
                     </Card>
                     ))
