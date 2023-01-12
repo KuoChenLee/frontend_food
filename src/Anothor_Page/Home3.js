@@ -1,7 +1,9 @@
 import {Container, Navbar,Col,Row} from "react-bootstrap";
-import React from 'react';
+import React, {useState} from 'react';
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
+
+import { FormattedMessage, IntlProvider } from "react-intl";
 function Home3(){
     return(
         <div className="background5">
@@ -24,7 +26,6 @@ function Home3(){
                         <h1>我是小黑</h1>
                         <h1>我是小黑</h1>
                     </Col>
-
 
                 </Row>
                 <br/>

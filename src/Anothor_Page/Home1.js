@@ -4,12 +4,13 @@ import useInterval from 'use-interval'
 import '../App.css';
 import apple2 from '../image/apple2.jpg'
 import { SearchOutlined,AudioOutlined ,LoadingOutlined, PlusOutlined,InboxOutlined ,ArrowRightOutlined} from '@ant-design/icons';
-import {  Button, Tooltip, Space  ,Input,message, Upload,Card,Radio} from "antd"
+import {  Button, Tooltip, Space  ,Input,message, Upload,Card,Radio,Spin} from "antd"
 import p1 from '../image/Home1_img.jpg'
 import Pngtree from '../image/Pngtree.png'
+
 // import Texty from 'rc-texty';
 // import 'rc-texty/assets/index.css';
-import MealList from './MealLIst'
+// import MealList from './MealLIst'
 // const { Search } = Input;
 //
 // const onSearch = (value) => console.log(value);
@@ -44,12 +45,12 @@ function Home1(props){
     const [url,setUrl]=useState()
     const [random,setRandom]=useState(10000)
     const [randomcard,setRandomCard]=useState()
+    const [isloading,setLoading]=useState(true)
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     useEffect(()=>{recipemessage()},[])
     useEffect(()=>{getrecipe()},[])
     useInterval(() => {
-        // 这是你的自定义逻辑
         setRandom(Math.floor(Math.random() * 10000));
         console.log(random)
         console.count()
@@ -57,6 +58,24 @@ function Home1(props){
     },10000);
     const API_KEY=props.API_KEY
     const { Meta } = Card;
+
+    const [loadings, setLoadings] = useState([]);
+    const enterLoading = (index) => {
+        getrecipe();
+        setLoadings((prevLoadings) => {
+            const newLoadings = [...prevLoadings];
+            newLoadings[index] = true;
+            return newLoadings;
+        });
+        setTimeout(() => {
+            setLoadings((prevLoadings) => {
+                const newLoadings = [...prevLoadings];
+                newLoadings[index] = false;
+                return newLoadings;
+            });
+        }, 500);
+    };
+
 
     // 輸入食材
     function handlechange(e){
@@ -90,12 +109,15 @@ function Home1(props){
             return Cook_method
         }))
         setCook_method(cook_methods.filter(Cook_method => Cook_method !== null))
+        setLoading(false)
     }
 
     // 將相關食物Map出來
     function RecipeMessage(){
         return(
             <div>
+                <Modal.Title>所需材料</Modal.Title>
+                <hr/>
                 {
                     cook_method.map((Cook_method,j)=>(
 
@@ -136,12 +158,21 @@ function Home1(props){
 
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Recipe Message</Modal.Title>
+                        <Modal.Title>食譜資訊</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
+                    {isloading==false?<Modal.Body>
                         {RecipeMessage()}
                         <a href={url} >前往製作方法<ArrowRightOutlined /></a>
-                    </Modal.Body>
+                    </Modal.Body>:<Space
+                        direction="vertical"
+                        style={{
+                            width: '100%',
+                        }}
+                    >
+                        <Spin tip="Loading" size="large">
+                            <div className="content" />
+                        </Spin>
+                    </Space>}
                     <Modal.Footer>
 
 
@@ -188,13 +219,16 @@ function Home1(props){
     // 顯示隨機食譜卡
     function display_recipe_card(){
         return(
-            <Card
-                hoverable
-                style={{ width: 300,height:400 }}
-                cover={<img src={randomcard} />}
-            >
+            <div>
+                <Card
+                    hoverable
+                    style={{ width: 300,height:400 }}
+                    cover={<img src={randomcard} />}
+                >
 
-            </Card>
+                </Card>
+
+            </div>
         )
     }
 
@@ -253,9 +287,14 @@ function Home1(props){
                    </Radio.Group>
                </Row>
 
-                    <button onClick={()=>random_recipe_card()}>Click me!</button>
+                    {/*<button onClick={()=>random_recipe_card()}>Click me!</button>*/}
                     <br/>
-                <Row><Button onClick={()=>getrecipe()} className="btn-59">Get Daily meal</Button></Row>
+                <Row>
+                    {/*<Button onClick={()=>getrecipe()} className="btn-59">Get Daily meal</Button>*/}
+                    <Button type="primary" loading={loadings[0]} onClick={() => enterLoading(0)}>
+                        Get Daily meal
+                    </Button>
+                </Row>
                     <br/>
 
                 </div>
