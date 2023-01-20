@@ -46,20 +46,22 @@ function Home1(props){
     const [random,setRandom]=useState(10000)
     const [randomcard,setRandomCard]=useState()
     const [isloading,setLoading]=useState(true)
+    const [step_equipment,set_Step_Equipment]=useState([])
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     useEffect(()=>{recipemessage()},[])
     useEffect(()=>{getrecipe()},[])
-    useInterval(() => {
-        setRandom(Math.floor(Math.random() * 10000));
-        console.log(random)
-        console.count()
-        random_recipe_card()
-    },10000);
+    // useInterval(() => {
+    //     setRandom(Math.floor(Math.random() * 10000));
+    //     console.log(random)
+    //     console.count()
+    //     random_recipe_card()
+    // },10000);
     const API_KEY=props.API_KEY
     const { Meta } = Card;
 
     const [loadings, setLoadings] = useState([]);
+    // loading delay
     const enterLoading = (index) => {
         getrecipe();
         setLoadings((prevLoadings) => {
@@ -153,15 +155,16 @@ function Home1(props){
         return(
             <div>
                 <button  className={"btn-76"}  onClick={handleShow}>
-                    <span onClick={()=>{recipemessage(recipeid);fetchUrl(recipeid);}}>Show Recipe Message</span>
+                    <span onClick={()=>{recipemessage(recipeid);fetchUrl(recipeid);recipe_step(recipeid);}}>Show Recipe Message</span>
                 </button>
 
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
+                <Modal show={show} onHide={handleClose} className={"Modal_outside"}>
+                    <Modal.Header closeButton className={"Modal_color"}>
                         <Modal.Title>食譜資訊</Modal.Title>
                     </Modal.Header>
-                    {isloading==false?<Modal.Body>
+                    {isloading==false?<Modal.Body className={"Modal_color"}>
                         {RecipeMessage()}
+                        {Recipe_Step()}
                         <a href={url} >前往製作方法<ArrowRightOutlined /></a>
                     </Modal.Body>:<Space
                         direction="vertical"
@@ -173,7 +176,7 @@ function Home1(props){
                             <div className="content" />
                         </Spin>
                     </Space>}
-                    <Modal.Footer>
+                    <Modal.Footer className={"Modal_color"}>
 
 
                         {/*<a href={`${sourceUrl}`}>Product Method<ArrowRightOutlined /></a>*/}
@@ -232,6 +235,43 @@ function Home1(props){
         )
     }
 
+    async function recipe_step(recipeid){
+        let recipe_step=await fetch(`https://api.spoonacular.com/recipes/${recipeid}/analyzedInstructions?apiKey=${API_KEY}`)
+        console.log(recipe_step)
+        let json=await recipe_step.json()
+        let json1=json[0]
+        console.log(json)
+        let steps=await json1.steps
+
+        console.log(steps)
+        console.log(json.steps)
+        const step_equipment=await Promise.all(steps.map(async(l)=>{
+            const Step_equipment={
+                equipment:l.equipment,
+                number:parseInt(l.number),
+                ingredients:l.ingredients,
+                step:l.step.toString()
+            }
+            return Step_equipment;
+        }))
+        set_Step_Equipment(step_equipment.filter(Step_equipment => Step_equipment !== null))
+        console.log(step_equipment)
+    }
+    function Recipe_Step(){
+        return(
+            <div>
+                {
+                    step_equipment.map((Step_equipment,l)=>(
+                        <ul key={l}>
+                            {/*<li>{Step_equipment.equipment}</li>*/}
+                            <li>{Step_equipment.number}.{Step_equipment.step}</li>
+                        </ul>
+                    ))
+                }
+
+            </div>
+        )
+    }
     return(
         <div className="background">
             <br/>
@@ -260,7 +300,7 @@ function Home1(props){
                     </Col>
                     {/*推薦食譜*/}
                     <Col md="auto">
-                        {display_recipe_card()}
+                        {/*{display_recipe_card()}*/}
                     </Col>
 
 
@@ -306,7 +346,7 @@ function Home1(props){
                     hoverable
                     style={{
                     width: 240,
-
+                        margin:5,
                 }}
                     cover={<img alt="example" src={Recipes.image} />}
                     >
@@ -315,9 +355,12 @@ function Home1(props){
                         {display_recipemessage(Recipes.id)}
                     </Card>
                     ))
+
                 }
 
+
             </Row>
+                <br/>
             </Container>
             <br/>
             <br/>
